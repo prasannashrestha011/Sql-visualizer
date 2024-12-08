@@ -1,45 +1,49 @@
-import Nodes from '@/app_components/Nodes';
+import Nodes from '@/app_components/Nodes'
 import React from 'react'
-import ReactFlow, { Background, useEdges, useEdgesState, useNodesState } from 'reactflow';
+import ReactFlow, { Background, useEdgesState, useNodesState } from 'reactflow'
 import 'reactflow/dist/style.css';
-
-const initialNodes=[
-  {id:'1',position:{x:0,y:0},
-  data:{
-    label:"Node 1",
-    desc: "This is a sample node", 
-   
-    
-  },
-  type:'nodes'
-  },
+const initialNode=[
   {
-    id:'2',position:{x:100,y:100},
+    id:"1",
+    position:{x:0,y:0} ,
     data:{
-    label:"Node 1",
-    desc: "This is a sample node", 
-   
+      label:'Node1',
+      desc:"this is node1"
     },
-    type:'nodes'
+    type:'custom'
+  },  
+  {
+    id:"2",
+    position:{x:100,y:100},
+    data:{
+      label:"Node 2",
+      desc:"this is node2"
+    },
+    type:"custom"
+  }
+]
+const initialEdge=[
+ {
+  id:'e1-e2',
+  source:'1',
+  target:'2',
+  type:'smoothstep'
  }
 ]
-const initialEdges=[
-  {'id':'e1-e2',source:'1',target:'2',type:'smoothstep'}
-]
 const index = () => {
-  const [nodes,setNodes,onNodesChange]=useNodesState(initialNodes)
-  const [edges,setEdges,onEdgesChange]=useEdgesState(initialEdges)
+  const [nodes,setNodes,onNodesStateChange]=useNodesState(initialNode)
+  const [egdes,setEdges,onEdgesStateChange]=useEdgesState(initialEdge)
   return (
     <div className='h-screen w-screen'>
-      <ReactFlow nodes={nodes} 
-      edges={edges}
-      onNodesChange={onNodesChange}
-      onEdgesChange={onEdgesChange}
-      nodeTypes={{nodes:Nodes}}
+      <ReactFlow
+      nodes={nodes}
+      edges={egdes}
+      nodeTypes={{custom:Nodes}}
+      onNodesChange={onNodesStateChange}
+      onEdgesChange={onEdgesStateChange}
       >
         <Background/>
       </ReactFlow>
-
     </div>
   )
 }
