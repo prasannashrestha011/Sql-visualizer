@@ -12,8 +12,10 @@
     "@prisma/client": "^6.0.1",
     "axios": "^1.7.9",
     "lodash": "^4.17.21",
+    "monaco-editor": "^0.52.0",
     "next": "15.0.4",
     "next-auth": "^4.24.11",
+    "openai": "^4.76.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "reactflow": "^11.11.4"
