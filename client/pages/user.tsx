@@ -13,10 +13,15 @@ const user = () => {
         console.log("no db connected")
         return 
       }
+      const result=db.exec(query)
+      if(result.length==0){
+        console.log("no results")
+      }
      const list=QueryParser(query)
      console.log("list ",list)
     }catch(err){
       console.log("error",err)
+      return 
     }
   }
   const handleEditorMount=(editor:EditorProps,monaco:Monaco)=>{
@@ -50,7 +55,6 @@ const user = () => {
   const handleEditorChange=(editor:MonacoDiffEditor,monaco:Monaco)=>{
     editor.onDidChangeModelContent(()=>{
       const value=editor.getValue()
-      console.log(value)
       setQuery(value)
     })
   
