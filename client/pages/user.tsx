@@ -1,37 +1,28 @@
-import { Editor, EditorProps, Monaco } from '@monaco-editor/react'
+import { Editor, EditorProps, Monaco, MonacoDiffEditor } from '@monaco-editor/react'
 import initSqlJs, { Database } from 'sql.js';
 import React, { useEffect, useState } from 'react'
+import { DbStructure } from '@/types/DbStructure';
 
 const user = () => {
   const [query,setQuery]=useState<string>("")
   const [db,setDb]=useState<Database|null>(null)
-  const executeQuery=async()=>{
-    if(!db){
-      console.log('no db connected')
-      return 
-    }
-    try {
-      const result = db.exec(query); // Execute SQL query
-      if (result.length === 0) {
-        console.log('no results')
-      } else {
-        // Format result for display
-        const outputString = result
-          .map(
-            (table) =>
-              `Columns: ${table.columns.join(', ')}\nRows:\n${JSON.stringify(
-                table.values,
-                null,
-                2
-              )}`
-          )
-          .join('\n\n');
-          console.log(outputString)
+  const executeQuery=()=>{
+    try{
+      if(!db){
+        console.log("no db connected")
+        return 
       }
-    } catch (error) {
-      console.error(error)
+      const results=db.exec(query)
+      if(results.length==0){
+        console.log("no results !!!")
+        return 
+      }
+      results.forEach(result=>(
+        console.log(result)
+      ))
+    }catch(err){
+      console.log("error",err)
     }
-    
   }
   const handleEditorMount=(editor:EditorProps,monaco:Monaco)=>{
     monaco.languages.registerCompletionItemProvider('sql',{
@@ -61,7 +52,7 @@ const user = () => {
       }
     })
   }
-  const handleEditorChange=(editor,monaco:Monaco)=>{
+  const handleEditorChange=(editor:MonacoDiffEditor,monaco:Monaco)=>{
     editor.onDidChangeModelContent(()=>{
       const value=editor.getValue()
       console.log(value)
@@ -72,7 +63,7 @@ const user = () => {
   useEffect(()=>{
     const loadSqljs=async()=>{
       const Sql = await initSqlJs({
-         locateFile: file => `https://sql.js.org/dist/${file}`
+         locateFile: file => `https://sql.js.org/dist/${file}` //getting sql engine
       });
       
       const database=new Sql.Database()
