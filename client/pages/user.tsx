@@ -2,6 +2,7 @@ import { Editor, EditorProps, Monaco, MonacoDiffEditor } from '@monaco-editor/re
 import initSqlJs, { Database } from 'sql.js';
 import React, { useEffect, useState } from 'react'
 import { DbStructure } from '@/types/DbStructure';
+import { QueryParser } from '@/app_utils/QueryParser';
 
 const user = () => {
   const [query,setQuery]=useState<string>("")
@@ -12,14 +13,8 @@ const user = () => {
         console.log("no db connected")
         return 
       }
-      const results=db.exec(query)
-      if(results.length==0){
-        console.log("no results !!!")
-        return 
-      }
-      results.forEach(result=>(
-        console.log(result)
-      ))
+     const list=QueryParser(query)
+     console.log("list ",list)
     }catch(err){
       console.log("error",err)
     }
