@@ -1,8 +1,38 @@
 import { Editor, EditorProps, Monaco } from '@monaco-editor/react'
-
-import React from 'react'
+import initSqlJs, { Database } from 'sql.js';
+import React, { useEffect, useState } from 'react'
 
 const user = () => {
+  const [query,setQuery]=useState<string>("")
+  const [db,setDb]=useState<Database|null>(null)
+  const executeQuery=async()=>{
+    if(!db){
+      console.log('no db connected')
+      return 
+    }
+    try {
+      const result = db.exec(query); // Execute SQL query
+      if (result.length === 0) {
+        console.log('no results')
+      } else {
+        // Format result for display
+        const outputString = result
+          .map(
+            (table) =>
+              `Columns: ${table.columns.join(', ')}\nRows:\n${JSON.stringify(
+                table.values,
+                null,
+                2
+              )}`
+          )
+          .join('\n\n');
+          console.log(outputString)
+      }
+    } catch (error) {
+      console.error(error)
+    }
+    
+  }
   const handleEditorMount=(editor:EditorProps,monaco:Monaco)=>{
     monaco.languages.registerCompletionItemProvider('sql',{
       provideCompletionItems:()=>{
@@ -31,6 +61,25 @@ const user = () => {
       }
     })
   }
+  const handleEditorChange=(editor,monaco:Monaco)=>{
+    editor.onDidChangeModelContent(()=>{
+      const value=editor.getValue()
+      console.log(value)
+      setQuery(value)
+    })
+  
+  }
+  useEffect(()=>{
+    const loadSqljs=async()=>{
+      const Sql = await initSqlJs({
+         locateFile: file => `https://sql.js.org/dist/${file}`
+      });
+      
+      const database=new Sql.Database()
+      setDb(database)
+    }
+    loadSqljs()
+  },[])
   return (
     <div className='flex items-center justify-center md:w-4/12'>
       <Editor
@@ -53,14 +102,10 @@ const user = () => {
       }}
       onMount={(editor,monaco:Monaco)=>{
         handleEditorMount(editor,monaco)
-        const editorvalue=editor.getValue()
-        console.log(editorvalue)
-        editor.onDidChangeModelContent(()=>{
-          const updatedValues=editor.getValue()
-          console.log(updatedValues)
-        })
+        handleEditorChange(editor,monaco)
       }}
       />
+      <button onClick={()=>executeQuery()}>Execute</button>
     </div>
   )
 }
