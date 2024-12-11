@@ -1,65 +1,49 @@
 export function QueryParser(query: string): void {
     // Extract table name
-    const tableNameMatch = query.match(/`?(\w+)`?\s*\(/i);
+    const cleanQuery = query.replace(/--.*$/gm, '').replace(/\/\*[\s\S]*?\*\//g, '');
+    const tableNameMatch = cleanQuery.match(/`?(\w+)`?\s*\(/i);
+
     if (!tableNameMatch) return;
     
-    const tableName = tableNameMatch[1].toLowerCase();
-    console.log(`Table Name: ${tableName}`);
+    const tableName=tableNameMatch[1]
     
-    // Extract column definitions
-    const columnSection = query.substring(query.indexOf('(') + 1, query.lastIndexOf(')'));
-    console.log("column section ",columnSection)
-    const columnDefinitions = splitColumnDefinitions(columnSection); //get all the columns
+    console.log("Table name ",tableName)
     
-    let primaryKey: string[] = [];
-    let foreignKeys: { sourceColumn: string, targetTable: string, targetColumn: string }[] = [];
+    const columnDefinitionsString=query.substring(query.indexOf('(')+1,query.lastIndexOf(')')).replace(/--.*$/gm, '').replace(/\/\*[\s\S]*?\*\//g, '');
 
-    columnDefinitions.forEach(colDef => {
-        // Skip constraint definitions
-        if (colDef.toLowerCase().startsWith('constraint') ||
-            colDef.toLowerCase().startsWith('primary key') ||
-            colDef.toLowerCase().startsWith('foreign key')) {
-                
-            // Handle PRIMARY KEY constraint
-            if (colDef.toLowerCase().includes('primary key')) {
-                const pkMatch = colDef.match(/PRIMARY KEY\s*\(([^)]+)\)/i);
-                if (pkMatch) {
-                    primaryKey = pkMatch[1].split(',').map(col => col.trim().replace(/`/g, '').toLowerCase());
-                    console.log(`Primary Key Columns: ${primaryKey.join(', ')}`);
-                }
-            }
-
-            // Handle FOREIGN KEY constraints
-            const fkMatch = colDef.match(/FOREIGN KEY\s*\(`?(\w+)`?\)\s*REFERENCES\s*`?(\w+)`?\s*\(`?(\w+)`?\)/i);
-            if (fkMatch) {
-                foreignKeys.push({
-                    sourceColumn: fkMatch[1],
-                    targetTable: fkMatch[2].toLowerCase(),
-                    targetColumn: fkMatch[3]
-                });
-                console.log(`Foreign Key: ${fkMatch[1]} references ${fkMatch[2]}(${fkMatch[3]})`);
-            }
-
-            return;
+    const columnDefinition=splitColumnDefinitions(columnDefinitionsString)
+ 
+    columnDefinition.forEach(colDef=>{
+        console.log('col definition-> ',colDef)
+        if(colDef.toLowerCase().includes("primary key")){
+            console.log("PRIMARY KEY->",colDef)
         }
-
-        // Parse column definition
+        if(colDef.toLowerCase().includes("foreign key")){
+            const match = colDef.match(/FOREIGN KEY \((\w+)\) REFERENCES (\w+)\((\w+)\)/);
+            if(match){
+                console.log("table name",tableName)
+                console.log("targeted column",match[2])
+                console.log("targeted field ",match[3])
+            }
+        }
         const parts = colDef.split(/\s+/);
-        if (parts.length < 2) return;
+        console.log("field name-> ",parts[0])
+        console.log("field type ->",parts[1])
 
-        const columnName = parts[0].replace(/`/g, '');
-        let dataType = parts[1];
-        if (dataType.includes('(')) {
-            dataType = dataType.split('(')[0];
+        const isPk=colDef.toLowerCase().includes("primary key")
+        console.log(`${isPk}`)
+        console.log("\n \n" )
+    })
+    let primaryKeys:string[]=[]
+    let foreignKeys:{sourceTable:string,targetTable:string,targetColumn:string}[]=[]
+
+    columnDefinition.forEach(colDef=>{
+        if(colDef.startsWith('primary key')){
+            console.log('PRIMARY KEY-> ',colDef)
         }
-        dataType = dataType.toLowerCase();
-
-        // Log column name and data type
-        console.log(`Column: ${columnName}, Data Type: ${dataType}`);
-    });
+    })
 }
 
-// Helper function to split the column definitions (assuming this function is available)
-function splitColumnDefinitions(columnSection: string): string[] {
-    return columnSection.split(',').map(col => col.trim());
+function splitColumnDefinitions(columnDef:string){
+    return columnDef.split(',').map(def=>def.trim())
 }
