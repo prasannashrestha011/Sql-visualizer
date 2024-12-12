@@ -1,20 +1,30 @@
-import { NodeData } from '@/types/NodeData'
-import React from 'react'
-import { Handle, Position } from 'reactflow';
-interface Prop{
-    id:string,
-    data:NodeData
+interface NodeDataType{
+  id:string
+  student_name:string
+  relation:string
+  class_name:string
 }
-const Nodes:React.FC<Prop> = ({id,data}) => {
-  
-  return (
-    <div className='flex flex-col gap-2 border border-black p-2 rounded-md'>
-       <span>{data.label}</span>
-       <span>{data.desc}</span>
-       <Handle type="source" position={Position.Right} id="a" style={{ background: 'red' }} />
-      <Handle type="target" position={Position.Left} id="b" style={{ background: 'blue' }} />
-    </div>
-  )
-}
+const NodeData:NodeDataType[]=[
+  {
+    id:"1",
+    class_name:"1stsem",
+    relation:"student",
+    student_name:"prasanna"
+  },
+  {
+    id:"1",
+    class_name:"1stsem",
+    relation:"student",
+    student_name:"jake"
+  },
+  {
+    id:"1",
+    class_name:"1stsem",
+    relation:"student",
+    student_name:"mike"
+  }
 
-export default Nodes
+
+   
+]
+export type {NodeDataType}
