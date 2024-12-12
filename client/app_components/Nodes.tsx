@@ -1,30 +1,45 @@
-interface NodeDataType{
+
+interface NodeType{
   id:string
-  student_name:string
-  relation:string
-  class_name:string
-}
-const NodeData:NodeDataType[]=[
-  {
-    id:"1",
-    class_name:"1stsem",
-    relation:"student",
-    student_name:"prasanna"
-  },
-  {
-    id:"1",
-    class_name:"1stsem",
-    relation:"student",
-    student_name:"jake"
-  },
-  {
-    id:"1",
-    class_name:"1stsem",
-    relation:"student",
-    student_name:"mike"
+  position:{x:number,y:number}
+  type:"dataschema",
+  data:{
+    label:string 
+    schema:[{}]
   }
-
-
-   
+}
+const NodeData:NodeType[]=[
+{
+  id:"1",
+  position:{x:0,y:0},
+  type:"dataschema",
+  data:{
+    label:"student",
+    schema:[
+      {name:"prasanna",address:"sallaghari",college:"samriddhi"},
+      
+    ]
+  }
+},
+{
+  id:"2",
+  position:{x:100,y:100},
+  type:"dataschema",
+  data:{
+    label:"district",
+    schema:[
+      {name:"bhaktapur",address:"lokanthali"}
+    ]
+  }
+}
 ]
-export type {NodeDataType}
+const NodeEdges=[
+  {
+    id:'e1-e2',
+    source:"1",
+    target:"2",
+    type:"smoothstep" 
+  }
+]
+export type {NodeType}
+export  {NodeData,NodeEdges}
