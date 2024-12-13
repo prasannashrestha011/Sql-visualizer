@@ -12,7 +12,7 @@ export function QueryParser(query: string): void {
     const columnDefinitionsString=query.substring(query.indexOf('(')+1,query.lastIndexOf(')')).replace(/--.*$/gm, '').replace(/\/\*[\s\S]*?\*\//g, '');
 
     const columnDefinition=splitColumnDefinitions(columnDefinitionsString)
- 
+    console.log(columnDefinition)
     columnDefinition.forEach(colDef=>{
         console.log('col definition-> ',colDef)
         if(colDef.toLowerCase().includes("primary key")){
