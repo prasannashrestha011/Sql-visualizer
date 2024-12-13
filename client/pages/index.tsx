@@ -1,5 +1,5 @@
 import NodeDataSchema from '@/app_components/NodeDataSchema';
-import { NodeData } from '@/app_components/Nodes';
+import { NodeData, NodeEdges } from '@/app_components/Nodes';
 import React from 'react'
 import ReactFlow, { Background, BackgroundVariant, useEdgesState, useNodesState } from 'reactflow'
 import 'reactflow/dist/style.css';
@@ -12,6 +12,7 @@ const index = () => {
     <div className='h-screen w-screen bg-gray-700'>
       <ReactFlow
       nodes={nodes}
+      edges={NodeEdges}
       nodeTypes={{
         "dataschema":NodeDataSchema
       }}

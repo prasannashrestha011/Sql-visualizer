@@ -38,6 +38,16 @@ const NodeEdges=[
     id:'e1-e2',
     source:"1",
     target:"2",
+    sourceHandle:"prasanna-0",
+    targetHandle:"bhaktapur-0",
+    type:"smoothstep" 
+  },
+  {
+    id:'e3-e4',
+    source:"1",
+    target:"2",
+    sourceHandle:"prasanna-0",
+    targetHandle:"lokanthali-0",
     type:"smoothstep" 
   }
 ]
