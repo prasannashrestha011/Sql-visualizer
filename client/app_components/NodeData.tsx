@@ -1,64 +1,50 @@
-import { FamilyTreeType } from "@/types/FamilyTree";
+import { TableNode } from "@/types/TableNode";
 import { Edge } from "reactflow";
 
-const InitialNodes:FamilyTreeType[]=[
-    // nodes
+const InitialNode:TableNode[]=[
     {
-        id:"1",
-        position:{x:0,y:0},
+        id:'student',
+        position:{x:Math.ceil(Math.random()*500),y:Math.ceil(Math.random()*500)},
         data:{
-            label:"child",
             schema:[
-            {title:"jake",handleId:'jake'},
-            {title:"jake's Dad",handleId:'jake-dad'},
-            {title:"jake's Mom",handleId:'jake-mom'}
+                {title:'id',type:"TEXT",is_null:false,is_pk:true,is_unique:false},
+                {title:'name',type:"TEXT",is_null:false,is_pk:false,is_unique:false},
+                {title:'contacts',type:"TEXT",is_null:false,is_pk:false,is_unique:false}
+                
             ]
         },
-        type:"dataSchema"
+        type:'dataSchema'
     },
-    //jake dad's connections 
     {
-        id:"2",
-        position:{x:100,y:100},
+        id:'contact',
+        position:{x:Math.ceil(Math.random()*500),y:Math.ceil(Math.random()*500)},
         data:{
-            label:"dad",
             schema:[
-            {title:"mike",handleId:'mike'},
-            {title:"mike's Dad",handleId:'mike-dad'},
-            {title:"mike's Mom",handleId:'mike-mom'}
+                {title:'email',type:"TEXT",is_null:false,is_pk:true,is_unique:true},
+               
+                {title:'number',type:"TEXT",is_null:false,is_pk:false,is_unique:true}
             ]
-        },
-           type:"dataSchema"
-    },
-    //jake mom's connection
-    {
-        id:"3",
-        position:{x:0,y:200},
-        data:{
-            label:"mom",
-            schema:[
-            {title:"selena",handleId:'selena'},
-            {title:"selena's Dad",handleId:'selena-dad'},
-            {title:"mike's Mom",handleId:'selena-mom'}
-            ]
-        },
-           type:"dataSchema"
+        }
+        ,
+         type:'dataSchema'
     }
 ]
-const initialEdges:Edge[]=[
+const InitialEdges:Edge[]=[
     {
         id:'e1-e2',
-        source:'1',
-        target:'2',
-       sourceHandle:'jake-dad',
-       targetHandle:'mike'
+        source:'student',
+        target:'contact',
+        sourceHandle:'source-contacts',
+        targetHandle:'target-email',
+        type:'smoothstep'
     },
     {
         id:'e2-e3',
-        source:'1',
-        target:'3',
-       sourceHandle:'jake-mom',
-       targetHandle:'selena'
-    }
+        source:'student',
+        target:'contact',
+        sourceHandle:'source-contacts',
+        targetHandle:'target-number',
+        type:'smoothstep'
+    },
 ]
-export {InitialNodes,initialEdges}
+export {InitialNode,InitialEdges}

@@ -1,40 +1,52 @@
+import React, {  useState, useLayoutEffect } from 'react';
+import { Handle, NodeProps, Position } from 'reactflow';
 
-import React from 'react';
-import {  Handle, NodeProps, Position } from 'reactflow';
-type NodeDataSchema={
-    label:string;
-    schema:{title:string,handleId?:string}[]
+interface DataSchema {
+  label: string;
+  schema: [{ title: string }];
 }
-export function NodeDataSchema({data}:NodeProps<NodeDataSchema>){
-    return (
-        <div className='bg-slate-400 p-2 rounded-md'>
-           <strong> {data.label}</strong>
-            {data.schema&&data.schema.map((item, idx) => (
-                
-                <>
-                {console.log(`target-${data.label}-${item.title}`)}
-                {console.log(`source-${item.handleId}`)}
-                {console.log(`\n`)}
-                <Handle
-                type='target'
-                id={`${item.handleId}`}
-                style={{top:`${42+26*idx}px`}}
-                position={Position.Left}
-                />
-                 <div key={idx}>{item.title}</div>
 
-                 <Handle
-                type='source'
-                id={`${item.handleId}`}
-               
-                style={{top:`${42+26*idx}px`}}
-                position={Position.Right}
-                />
-                </>
-               
-            ))}
+const NodeDataSchema: React.FC<NodeProps<DataSchema>> = ({ data }) => {
+  const [handlePositions, setHandlePositions] = useState<number[]>([]);
+
+  useLayoutEffect(() => {
+    // Calculate the positions of the handles based on the item titles
+    const positions: number[] = [];
+    data.schema.forEach((item, idx) => {
+      const element = document.getElementById(`item-${idx}`);
+      if (element) {
+        positions.push(element.offsetTop + element.offsetHeight / 2);
+      }
+    });
+    setHandlePositions(positions);
+  }, [data.schema]);
+
+  return (
+    <div className="bg-gray-800 p-2 text-slate-50 rounded-md">
+      {data.label}
+      {data.schema.map((item, idx) => (
+        <div key={idx} id={`item-${idx}`} className="flex items-center">
+          <Handle
+            id={`target-${item.title}`}
+            position={Position.Left}
+            type="target"
+            style={{
+              top: `${handlePositions[idx] || 0}px`,
+            }}
+          />
+          {item.title}
+          <Handle
+            id={`source-${item.title}`}
+            position={Position.Right}
+            type="source"
+            style={{
+              top: `${handlePositions[idx] || 0}px`,
+            }}
+          />
         </div>
-    );
+      ))}
+    </div>
+  );
 };
 
 export default NodeDataSchema;
