@@ -1,13 +1,35 @@
-import { Editor, EditorProps, Monaco, MonacoDiffEditor } from '@monaco-editor/react'
+import { Editor, Monaco, MonacoDiffEditor } from '@monaco-editor/react'
 import initSqlJs, { Database } from 'sql.js';
-import React, { useEffect, useState } from 'react'
-import { DbStructure } from '@/types/DbStructure';
-import { QueryParser } from '@/app_utils/QueryParser';
+import React, { useCallback, useEffect, useState } from 'react'
+import QueryParser from '@/class/QueryParser';
+import { handleEditorMount } from '@/app_components/Monaco/EditorMount';
+import ReactFlow, { Background, Edge, Node, useEdgesState, useNodes, useNodesState } from 'reactflow';
+import 'reactflow/dist/style.css';
+import ELK from 'elkjs/lib/elk.bundled.js';
 
+import NodeDataSchema from '@/app_components/NodeDataSchema';
+const NodeType={
+  'dataschema':NodeDataSchema
+}
+const elk=new ELK()
+  const elkOptions = {
+    'elk.algorithm': 'layered',
+    'elk.spacing.nodeNode': '150',
+    'elk.layered.spacing.nodeNodeBetweenLayers': '200',
+    'elk.direction': 'RIGHT',
+    'elk.layered.crossingMinimization.strategy': 'LAYER_SWEEP',
+    'elk.layered.nodePlacement.strategy': 'SIMPLE',
+    'elk.layered.layering.strategy': 'NETWORK_SIMPLEX',
+  };
 const user = () => {
+  
   const [query,setQuery]=useState<string>("")
   const [db,setDb]=useState<Database|null>(null)
-  const executeQuery=()=>{
+  const [nodes,setNodes,onNodeStatesChange]=useNodesState([])
+  const [edges,setEdges,onEdgesStateChange]=useEdgesState([])
+
+  
+  const executeQuery=async()=>{
     try{
       if(!db){
         console.log("no db connected")
@@ -17,41 +39,20 @@ const user = () => {
       if(result.length==0){
         console.log("no results")
       }
-     const list=QueryParser(query)
-     console.log("list ",list)
+     
+     const queryParser=new QueryParser()
+     const {tableNodes,edges}=await queryParser.createNodesAndEdges(query)
+     console.log("TABLE NODE->",tableNodes)
+     console.log("EDGES->",edges)
+     setNodes(tableNodes)
+     setEdges(edges)
+     handleAutoLayout(tableNodes,edges)
     }catch(err){
       console.log("error",err)
       return 
     }
   }
-  const handleEditorMount=(editor:EditorProps,monaco:Monaco)=>{
-    monaco.languages.registerCompletionItemProvider('sql',{
-      provideCompletionItems:()=>{
-        const suggestions=[
-          {
-            label:"SELECT",
-            kind:monaco.languages.CompletionItemKind.Keyword,
-            insertText:'SELECT'
-            
-          },{
-            label:"WHERE",
-            kind:monaco.languages.CompletionItemKind.Keyword,
-            insertText:"WHERE"
-          },{
-            label:"FROM",
-            kind:monaco.languages.CompletionItemKind.Keyword,
-            insertText:"FROM"
-          }, 
-          {
-            label:"CREATE",
-            kind:monaco.languages.CompletionItemKind.Keyword,
-            insertText:"CREATE TABLE"
-          }
-        ]
-        return {suggestions}
-      }
-    })
-  }
+
   const handleEditorChange=(editor:MonacoDiffEditor,monaco:Monaco)=>{
     editor.onDidChangeModelContent(()=>{
       const value=editor.getValue()
@@ -59,6 +60,38 @@ const user = () => {
     })
   
   }
+  const handleAutoLayout=useCallback(async(nodes:Node[],edges:Edge[])=>{
+   
+    const elkGraph={
+      id:"root",
+      children:nodes.map((node)=>({
+        id:node.id,
+        width:80,
+        height:50+node.data.schema.length*30,
+      })),
+      edges:edges.map((edge)=>({
+        id:edge.id,
+        sources:[edge.source],
+        targets:[edge.target],
+      }))
+    };
+    try{
+      const layoutGraph=await elk.layout(elkGraph,{layoutOptions:elkOptions})
+      setNodes((nodes) =>
+        nodes.map((node) => ({
+          ...node,
+          position: {
+            x: layoutGraph.children?.find((n) => n.id === node.id)?.x ?? 0,
+            y: layoutGraph.children?.find((n) => n.id === node.id)?.y ?? 0,
+          },
+         
+        }))
+      );
+ 
+    }catch(err){
+      console.error(err)
+    }
+  },[nodes,edges,setNodes])
   useEffect(()=>{
     const loadSqljs=async()=>{
       const Sql = await initSqlJs({
@@ -70,11 +103,26 @@ const user = () => {
     }
     loadSqljs()
   },[])
+  useEffect(()=>{
+    handleAutoLayout(nodes,edges)
+   
+  },[])
   return (
-    <div className='flex items-center justify-center md:w-4/12'>
+    <div className='flex  items-center justify-center bg-gray-700 h-screen w-screen'>
+
+      <ReactFlow className='h-full w-full'
+      nodes={nodes}
+      edges={edges}
+      onNodesChange={onNodeStatesChange}
+      onEdgesChange={onEdgesStateChange}
+      nodeTypes={NodeType}
+      >
+        <Background/>
+      </ReactFlow>
+      <div className='flex flex-col w-6/12 h-full'>
       <Editor
 
-      height={"90vh"}
+      
       defaultLanguage='sql'
       theme='custom-theme'
       beforeMount={monaco => {
@@ -95,7 +143,10 @@ const user = () => {
         handleEditorChange(editor,monaco)
       }}
       />
-      <button onClick={()=>executeQuery()}>Execute</button>
+      <button 
+      className='bg-orange-400 p-2 rounded-md text-slate-50 '
+      onClick={()=>executeQuery()}>Execute</button>
+      </div>
     </div>
   )
 }

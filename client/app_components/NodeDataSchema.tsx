@@ -20,23 +20,24 @@ const NodeDataSchema: React.FC<NodeProps<DataSchema>> = ({ data }) => {
     });
     setHandlePositions(positions);
   }, [data.schema]);
-
+  console.log(data)
   return (
     <div className="bg-gray-800 p-2 text-slate-50 rounded-md">
-      {data.label}
+   
       {data.schema.map((item, idx) => (
-        <div key={idx} id={`item-${idx}`} className="flex items-center">
+        <div key={idx} id={`item-${idx}`} className="flex items-center"> 
           <Handle
-            id={`target-${item.title}`}
+            id={`${data.label}-${item.title}`}
             position={Position.Left}
             type="target"
             style={{
               top: `${handlePositions[idx] || 0}px`,
             }}
           />
+          
           {item.title}
           <Handle
-            id={`source-${item.title}`}
+         id={`${data.label}-${item.title}`}
             position={Position.Right}
             type="source"
             style={{

@@ -2,7 +2,9 @@ import type { Node } from "reactflow";
 
 declare global
   type TableNode = Omit<Node, 'data'> & {
+  
   data: Node['data'] & {
+    label:string,
     schema: {
       title: string,
       type: string,
