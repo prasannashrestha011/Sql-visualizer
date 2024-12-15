@@ -1,32 +1,24 @@
 import { Editor, Monaco, MonacoDiffEditor } from '@monaco-editor/react'
 import initSqlJs, { Database } from 'sql.js';
-import React, { useCallback, useEffect, useState } from 'react'
+import React, {  useEffect, useState } from 'react'
 import QueryParser from '@/class/QueryParser';
 import { handleEditorMount } from '@/app_components/Monaco/EditorMount';
-import ReactFlow, { Background, Edge, Node, useEdgesState, useNodes, useNodesState } from 'reactflow';
+import  { useEdgesState, useNodesState } from 'reactflow';
 import 'reactflow/dist/style.css';
-import ELK from 'elkjs/lib/elk.bundled.js';
 
-import NodeDataSchema from '@/app_components/NodeDataSchema';
-const NodeType={
-  'dataschema':NodeDataSchema
-}
-const elk=new ELK()
-  const elkOptions = {
-    'elk.algorithm': 'layered',
-    'elk.spacing.nodeNode': '150',
-    'elk.layered.spacing.nodeNodeBetweenLayers': '200',
-    'elk.direction': 'LEFT',
-    'elk.layered.crossingMinimization.strategy': 'LAYER_SWEEP',
-    'elk.layered.nodePlacement.strategy': 'SIMPLE',
-    'elk.layered.layering.strategy': 'NETWORK_SIMPLEX',
-  };
+
+
+
+import ReactFlowRenderer from '@/app_components/renderer/ReactFlowRenderer';
+
+
+
 const user = () => {
   
   const [query,setQuery]=useState<string>("")
   const [db,setDb]=useState<Database|null>(null)
-  const [nodes,setNodes,onNodeStatesChange]=useNodesState([])
-  const [edges,setEdges,onEdgesStateChange]=useEdgesState([])
+  const [nodes,setNodes]=useNodesState([])
+  const [edges,setEdges]=useEdgesState([])
 
   
   const executeQuery=async()=>{
@@ -42,11 +34,10 @@ const user = () => {
      
      const queryParser=new QueryParser()
      const {tableNodes,edges}=await queryParser.createNodesAndEdges(query)
-     console.log("TABLE NODE->",tableNodes)
-     console.log("EDGES->",edges)
+     
      setNodes(tableNodes)
      setEdges(edges)
-     handleAutoLayout(tableNodes,edges)
+     
     }catch(err){
       console.log("error",err)
       return 
@@ -60,38 +51,7 @@ const user = () => {
     })
   
   }
-  const handleAutoLayout=useCallback(async(nodes:Node[],edges:Edge[])=>{
-   
-    const elkGraph={
-      id:"root",
-      children:nodes.map((node)=>({
-        id:node.id,
-        width:80,
-        height:50+node.data.schema.length*30,
-      })),
-      edges:edges.map((edge)=>({
-        id:edge.id,
-        sources:[edge.source],
-        targets:[edge.target],
-      }))
-    };
-    try{
-      const layoutGraph=await elk.layout(elkGraph,{layoutOptions:elkOptions})
-      setNodes((nodes) =>
-        nodes.map((node) => ({
-          ...node,
-          position: {
-            x: layoutGraph.children?.find((n) => n.id === node.id)?.x ?? 0,
-            y: layoutGraph.children?.find((n) => n.id === node.id)?.y ?? 0,
-          },
-         
-        }))
-      );
  
-    }catch(err){
-      console.error(err)
-    }
-  },[nodes,edges,setNodes])
   useEffect(()=>{
     const loadSqljs=async()=>{
       const Sql = await initSqlJs({
@@ -102,24 +62,13 @@ const user = () => {
       setDb(database)
     }
     loadSqljs()
+  
   },[])
-  useEffect(()=>{
-    handleAutoLayout(nodes,edges)
-   
-  },[])
-  return (
-    <div className='flex  items-center justify-center bg-gray-700 h-screen w-screen'>
 
-      <ReactFlow className='h-full w-full'
-      nodes={nodes}
-      edges={edges}
-      onNodesChange={onNodeStatesChange}
-      onEdgesChange={onEdgesStateChange}
-      nodeTypes={NodeType}
-      >
-        <Background/>
-      </ReactFlow>
-      <div className='flex flex-col w-6/12 h-full'>
+  return (
+    <div className='flex  flex-col md:flex-row  items-center justify-center bg-gray-700 h-screen w-screen'>
+      <ReactFlowRenderer __nodes={nodes} __edges={edges}/>
+      <div className='flex flex-col md:w-6/12 w-full h-full'>
       <Editor
 
       
@@ -144,7 +93,7 @@ const user = () => {
       }}
       />
       <button 
-      className='bg-orange-400 p-2 rounded-md text-slate-50 '
+      className='bg-orange-600 p-2 rounded-md text-slate-100 '
       onClick={()=>executeQuery()}>Execute</button>
       </div>
     </div>
