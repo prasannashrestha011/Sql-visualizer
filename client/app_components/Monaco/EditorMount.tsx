@@ -1,32 +1,39 @@
-import { EditorProps, Monaco } from "@monaco-editor/react"
+import {  Monaco } from "@monaco-editor/react";
 
-const handleEditorMount=(editor:EditorProps,monaco:Monaco)=>{
-    monaco.languages.registerCompletionItemProvider('sql',{
-      provideCompletionItems:()=>{
-        const suggestions=[
-          {
-            label:"SELECT",
-            kind:monaco.languages.CompletionItemKind.Keyword,
-            insertText:'SELECT'
-            
-          },{
-            label:"WHERE",
-            kind:monaco.languages.CompletionItemKind.Keyword,
-            insertText:"WHERE"
-          },{
-            label:"FROM",
-            kind:monaco.languages.CompletionItemKind.Keyword,
-            insertText:"FROM"
-          }, 
-          {
-            label:"CREATE",
-            kind:monaco.languages.CompletionItemKind.Keyword,
-            insertText:"CREATE TABLE"
-          }
-        ]
-        return {suggestions}
-      }
-    })
-  }
 
-  export {handleEditorMount}
+const handleEditorMount = ( monaco: Monaco) => {
+  monaco.languages.registerCompletionItemProvider("sql", {
+    provideCompletionItems: (model, position) => {
+      const suggestions = [
+        {
+          label: "SELECT",
+          kind: monaco.languages.CompletionItemKind.Keyword,
+          insertText: "SELECT",
+          range: new monaco.Range(position.lineNumber, position.column, position.lineNumber, position.column), // Add the range property
+        },
+        {
+          label: "WHERE",
+          kind: monaco.languages.CompletionItemKind.Keyword,
+          insertText: "WHERE",
+          range: new monaco.Range(position.lineNumber, position.column, position.lineNumber, position.column),
+        },
+        {
+          label: "FROM",
+          kind: monaco.languages.CompletionItemKind.Keyword,
+          insertText: "FROM",
+          range: new monaco.Range(position.lineNumber, position.column, position.lineNumber, position.column),
+        },
+        {
+          label: "CREATE",
+          kind: monaco.languages.CompletionItemKind.Keyword,
+          insertText: "CREATE TABLE",
+          range: new monaco.Range(position.lineNumber, position.column, position.lineNumber, position.column),
+        },
+      ];
+
+      return { suggestions };
+    },
+  });
+};
+
+export { handleEditorMount };

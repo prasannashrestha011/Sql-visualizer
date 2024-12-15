@@ -1,4 +1,4 @@
-import { Editor, Monaco, MonacoDiffEditor } from '@monaco-editor/react'
+import { Editor, Monaco } from '@monaco-editor/react'
 import initSqlJs, { Database } from 'sql.js';
 import React, {  useEffect, useState } from 'react'
 import QueryParser from '@/class/QueryParser';
@@ -6,7 +6,7 @@ import { handleEditorMount } from '@/app_components/Monaco/EditorMount';
 import  { useEdgesState, useNodesState } from 'reactflow';
 import 'reactflow/dist/style.css';
 
-
+import * as monaco from 'monaco-editor'; 
 
 
 import ReactFlowRenderer from '@/app_components/renderer/ReactFlowRenderer';
@@ -44,13 +44,14 @@ const User = () => {
     }
   }
 
-  const handleEditorChange=(editor:MonacoDiffEditor)=>{
-    editor.onDidChangeModelContent(()=>{
-      const value=editor.getValue()
-      setQuery(value)
-    })
+  const handleEditorChange = (editor:monaco.editor.IStandaloneCodeEditor) => {
+    editor.onDidChangeModelContent(() => {
+      const value = editor.getValue();
+      setQuery(value);
+    });
+   
+  };
   
-  }
  
   useEffect(()=>{
     const loadSqljs=async()=>{
@@ -84,9 +85,10 @@ const User = () => {
       }}
       options={{
         wordWrap:"on"
+        
       }}
       onMount={(editor,monaco:Monaco)=>{
-        handleEditorMount(editor,monaco)
+        handleEditorMount(monaco)
         handleEditorChange(editor)
       }}
       />
