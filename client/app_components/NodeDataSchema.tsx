@@ -28,7 +28,7 @@ const NodeDataSchema: React.FC<NodeProps<DataSchema>> = ({ data }) => {
         <div key={idx} id={`item-${idx}`} className="flex items-center"> 
           <Handle
             id={`${data.label}-${item.title}`}
-            position={Position.Left}
+            position={Position.Right}
             type="target"
             style={{
               top: `${handlePositions[idx] || 0}px`,
@@ -38,7 +38,7 @@ const NodeDataSchema: React.FC<NodeProps<DataSchema>> = ({ data }) => {
           {item.title}
           <Handle
          id={`${data.label}-${item.title}`}
-            position={Position.Right}
+            position={Position.Left}
             type="source"
             style={{
               top: `${handlePositions[idx] || 0}px`,
