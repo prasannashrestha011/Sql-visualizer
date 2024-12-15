@@ -4,6 +4,7 @@ import 'reactflow/dist/style.css';
 import NodeDataSchema from '../NodeDataSchema'
 import { elkOptions } from '@/app_utils/elkOptions'
 import ELK from 'elkjs/lib/elk.bundled.js';
+import { FaGithub } from 'react-icons/fa';
 interface Prop{
     __nodes:Node[]
     __edges:Edge[]
@@ -61,7 +62,7 @@ const ReactFlowRenderer:React.FC<Prop> = ({__nodes,__edges}) => {
 
   return (
     <div className=' w-full  h-full'>
-     <ReactFlow className='h-full w-full'
+     <ReactFlow className='h-full w-full relative'
       nodes={nodes}
       edges={edges}
       onNodesChange={onNodeStatesChange}
@@ -69,7 +70,23 @@ const ReactFlowRenderer:React.FC<Prop> = ({__nodes,__edges}) => {
       nodeTypes={NodeType}
         proOptions={proOptions}
       >
-        
+     {nodes.length==0 && 
+     <div className='absolute inset-0 flex items-center justify-center  '>
+       <div className=' z-10 border border-yellow-300 h-96 w-96 rounded-md text-yellow-500 shadow-lg font-mono'>
+        <span className='flex justify-center items-center font-semibold mt-2'>Sql Visualizer</span>
+        <ul className='ml-2 mt-2  p-4 list-disc '>
+        <li>Visualize Sql table</li>
+        <li className=''>Access sample queries using 'SAMPLE 1 & SAMPLE 2 ' keywords </li>
+        <li >
+           <a 
+           className='flex gap-2  items-center'
+           href='https://github.com/prasannashrestha011/Sql-visualizer' 
+       rel='noopener noreferrer' 
+       target='_blank'>Source code <FaGithub/></a>
+        </li>
+        </ul>
+       </div>
+      </div>}
         <Background/>
       </ReactFlow>
     </div>
