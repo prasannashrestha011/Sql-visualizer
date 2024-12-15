@@ -52,7 +52,7 @@ const ReactFlowRenderer:React.FC<Prop> = ({__nodes,__edges}) => {
     }
   },[nodes,edges,setNodes])
 
-
+  const proOptions = { hideAttribution: true };
   useEffect(()=>{
     handleAutoLayout(__nodes,__edges)
     setNodes(__nodes)
@@ -60,14 +60,16 @@ const ReactFlowRenderer:React.FC<Prop> = ({__nodes,__edges}) => {
   },[__nodes,__edges])
 
   return (
-    <div className=' w-full md:w-8/12 h-full'>
+    <div className=' w-full  h-full'>
      <ReactFlow className='h-full w-full'
       nodes={nodes}
       edges={edges}
       onNodesChange={onNodeStatesChange}
       onEdgesChange={onEdgesStateChange}
       nodeTypes={NodeType}
+        proOptions={proOptions}
       >
+        
         <Background/>
       </ReactFlow>
     </div>

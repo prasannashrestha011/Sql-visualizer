@@ -13,7 +13,7 @@ import ReactFlowRenderer from '@/app_components/renderer/ReactFlowRenderer';
 
 
 
-const user = () => {
+const User = () => {
   
   const [query,setQuery]=useState<string>("")
   const [db,setDb]=useState<Database|null>(null)
@@ -44,7 +44,7 @@ const user = () => {
     }
   }
 
-  const handleEditorChange=(editor:MonacoDiffEditor,monaco:Monaco)=>{
+  const handleEditorChange=(editor:MonacoDiffEditor)=>{
     editor.onDidChangeModelContent(()=>{
       const value=editor.getValue()
       setQuery(value)
@@ -68,10 +68,8 @@ const user = () => {
   return (
     <div className='flex  flex-col md:flex-row  items-center justify-center bg-gray-700 h-screen w-screen'>
       <ReactFlowRenderer __nodes={nodes} __edges={edges}/>
-      <div className='flex flex-col md:w-6/12 w-full h-full'>
+      <div className='flex flex-col w-full md:w-6/12 md:h-full h-5/6'>
       <Editor
-
-      
       defaultLanguage='sql'
       theme='custom-theme'
       beforeMount={monaco => {
@@ -89,7 +87,7 @@ const user = () => {
       }}
       onMount={(editor,monaco:Monaco)=>{
         handleEditorMount(editor,monaco)
-        handleEditorChange(editor,monaco)
+        handleEditorChange(editor)
       }}
       />
       <button 
@@ -100,4 +98,4 @@ const user = () => {
   )
 }
 
-export default user
+export default User
