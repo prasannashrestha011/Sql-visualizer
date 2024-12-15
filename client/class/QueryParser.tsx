@@ -44,7 +44,10 @@ class QueryParser{
         columnDefinition.forEach(colDef=>{
             
             const parts = colDef.split(/\s+/);
-    
+            
+            if(parts[0].toLowerCase().includes('unique')){
+                console.log(parts[0],"has been founded")
+            }
             if(colDef.toLowerCase().includes('foreign key')){
                 const match = colDef.match(/FOREIGN KEY \((\w+)\) REFERENCES (\w+)\((\w+)\)/);
                 if(match){
