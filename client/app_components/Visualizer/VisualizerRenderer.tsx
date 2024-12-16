@@ -47,7 +47,7 @@ const SqlVisualizer = () => {
     </ResizablePanel>
     <ResizableHandle/>
      
-    <ResizablePanel defaultSize={33} >
+    <ResizablePanel defaultSize={34} >
       {/*editor */}
 
 <Tabs defaultValue='editor' className='h-full w-full  overflow-hidden  bg-[#17010A] '>
