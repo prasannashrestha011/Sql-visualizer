@@ -1,79 +1,29 @@
-import { Editor, Monaco } from '@monaco-editor/react'
-import initSqlJs, { Database } from 'sql.js';
-import React, {  useEffect, useState } from 'react'
-import QueryParser from '@/class/QueryParser';
-import { handleEditorMount } from '@/app_components/Monaco/EditorMount';
-import  { useEdgesState, useNodesState } from 'reactflow';
+
+import React from 'react'
 import 'reactflow/dist/style.css';
-
-
-import * as monaco from 'monaco-editor'; 
-
-
 import ReactFlowRenderer from '@/app_components/renderer/ReactFlowRenderer';
-import {  VscDebugStart } from 'react-icons/vsc';
 import { Tabs } from '@/components/ui/tabs';
 import { TabsContent, TabsList, TabsTrigger } from '@radix-ui/react-tabs';
-
+import CodeEditor from '../Tabs/CodeEditor';
+import { useAppSelector } from '@/redux/store';
+import moment from 'moment'
 
 
 const SqlVisualizer = () => {
   
-  const [query,setQuery]=useState<string>("")
-  const [db,setDb]=useState<Database|null>(null)
-  const [nodes,setNodes]=useNodesState([])
-  const [edges,setEdges]=useEdgesState([])
 
-  
-  const executeQuery=async()=>{
-    try{
-      if(!db){
-        console.log("no db connected")
-        return 
-      }
-      const result=db.exec(query)
-      if(result.length==0){
-        console.log("no results")
-      }
-     
-     const queryParser=new QueryParser()
-     const {tableNodes,edges}=await queryParser.createNodesAndEdges(query)
-     
-     setNodes(tableNodes)
-     setEdges(edges)
-     
-    }catch(err){
-      console.log("error",err)
-      return 
-    }
-  }
 
-  const handleEditorChange = (editor:monaco.editor.IStandaloneCodeEditor) => {
-    editor.onDidChangeModelContent(() => {
-      const value = editor.getValue();
-     
-      setQuery(value);
-    });
-   
-  };
-  
+  const {items:nodesAndEdges}=useAppSelector((state)=>state.tableNodesSlice)
+  const {items:logs}=useAppSelector((state)=>state.logDataSlice)
  
-  useEffect(()=>{
-    const loadSqljs=async()=>{
-      const Sql = await initSqlJs({
-         locateFile: file => `https://sql.js.org/dist/${file}` //getting sql engine
-      });
-      
-      const database=new Sql.Database()
-      setDb(database)
-    }
-    loadSqljs()
-  
-  },[])
+ 
 
   return (
     <div className='flex  flex-col md:flex-row  items-center justify-center bg-gray-700 h-screen w-screen'>
-      <ReactFlowRenderer __nodes={nodes} __edges={edges}/>
+      {/*flow renderer */}
+      <ReactFlowRenderer __nodes={nodesAndEdges?.nodes} __edges={nodesAndEdges?.edges}/>
+     
+     {/*editor */}
      <Tabs defaultValue='editor' className='h-full w-full  overflow-hidden md:w-6/12 bg-[#17010A] '>
       <TabsList className='flex gap-4 ml-4 p-1 font-mono text-slate-700'>
         <TabsTrigger value='editor'>Editor</TabsTrigger>
@@ -82,44 +32,22 @@ const SqlVisualizer = () => {
    
    <div className='  flex flex-col '>
    <TabsContent value='editor' className='flex flex-col   '>
-   
-
-   <div className='flex justify-end mr-7'>
-   <VscDebugStart className='  text-[#4d142b] z-10'
-   onClick={()=>executeQuery()}
-   size={29}/>
-   </div>
-   
-    <Editor
-    value={query}
-className='min-h-screen'
-defaultLanguage='sql'
-theme='custom-theme'
-beforeMount={monaco => {
-  monaco.editor.defineTheme('custom-theme', {
-    base: 'vs-dark', // Start with the 'vs-dark' base theme
-inherit: true,    // Inherit other settings from the base theme
-rules: [],        // Customize rules (if needed)
-colors: {
-  'editor.background': '#17010A', // Set background color to black
-},
-  });
-}}
-options={{
-  wordWrap:"on"
-  
-}}
-onMount={(editor,monaco:Monaco)=>{
-  handleEditorMount(monaco)
-  handleEditorChange(editor)
-}}
-/>
-  
-  
+    <CodeEditor/>
    </TabsContent>
 
-   <TabsContent value='logs' className=''>
-       <p className='text-slate-50'>Logs</p>
+   <TabsContent value='logs' className='bg-black text-slate-400 font-mono'>
+    <div className='p-2 h-screen'>
+      <ul>
+        {logs.map((log,idx)=>{
+          return(
+            <li key={idx} className={`flex gap-2 ${log.is_err?'text-red-700':''}`}>
+              <span >{moment.utc(log.created_at).format('DD/MM/YYYY HH:mm:ss')}</span>
+              <span>{log.message}</span>
+              </li>
+          )
+        })}
+      </ul>
+    </div>
    </TabsContent>
    </div>
      
