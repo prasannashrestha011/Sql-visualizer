@@ -10,6 +10,7 @@ import * as monaco from 'monaco-editor';
 
 
 import ReactFlowRenderer from '@/app_components/renderer/ReactFlowRenderer';
+import {  VscDebugStart } from 'react-icons/vsc';
 
 
 
@@ -69,8 +70,14 @@ const SqlVisualizer = () => {
   return (
     <div className='flex  flex-col md:flex-row  items-center justify-center bg-gray-700 h-screen w-screen'>
       <ReactFlowRenderer __nodes={nodes} __edges={edges}/>
-      <div className='flex flex-col w-full md:w-6/12 md:h-full h-5/6 '>
-      <div className='flex-1'>
+      <div className='flex flex-col w-full md:w-6/12 md:h-full h-3/6 bg-[#17010A]'>
+     <div className=' flex justify-end mr-5 '>
+     <VscDebugStart className='  text-[#4d142b] z-10'
+      onClick={()=>executeQuery()}
+      size={29}/>
+     </div>
+      <div className='flex-1 '>
+     
       <Editor
       defaultLanguage='sql'
       theme='custom-theme'
@@ -95,9 +102,7 @@ const SqlVisualizer = () => {
       />
       </div>
       <div className='h-12 md:h-20 flex items-center justify-center bg-[#17010A] '>
-      <button 
-      className='bg-orange-600 md:p-4 p-2 w-60 rounded-md text-slate-100  '
-      onClick={()=>executeQuery()}>Execute</button>
+      
       </div>
       </div>
     </div>
