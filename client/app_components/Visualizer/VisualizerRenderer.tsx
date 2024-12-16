@@ -6,11 +6,14 @@ import { handleEditorMount } from '@/app_components/Monaco/EditorMount';
 import  { useEdgesState, useNodesState } from 'reactflow';
 import 'reactflow/dist/style.css';
 
+
 import * as monaco from 'monaco-editor'; 
 
 
 import ReactFlowRenderer from '@/app_components/renderer/ReactFlowRenderer';
 import {  VscDebugStart } from 'react-icons/vsc';
+import { Tabs } from '@/components/ui/tabs';
+import { TabsContent, TabsList, TabsTrigger } from '@radix-ui/react-tabs';
 
 
 
@@ -48,6 +51,7 @@ const SqlVisualizer = () => {
   const handleEditorChange = (editor:monaco.editor.IStandaloneCodeEditor) => {
     editor.onDidChangeModelContent(() => {
       const value = editor.getValue();
+     
       setQuery(value);
     });
    
@@ -70,41 +74,56 @@ const SqlVisualizer = () => {
   return (
     <div className='flex  flex-col md:flex-row  items-center justify-center bg-gray-700 h-screen w-screen'>
       <ReactFlowRenderer __nodes={nodes} __edges={edges}/>
-      <div className='flex flex-col w-full md:w-6/12 md:h-full h-3/6 bg-[#17010A]'>
-     <div className=' flex justify-end mr-5 '>
-     <VscDebugStart className='  text-[#4d142b] z-10'
-      onClick={()=>executeQuery()}
-      size={29}/>
-     </div>
-      <div className='flex-1 '>
+     <Tabs defaultValue='editor' className='h-full w-full  overflow-hidden md:w-6/12 bg-[#17010A] '>
+      <TabsList className='flex gap-4 ml-4 p-1 font-mono text-slate-700'>
+        <TabsTrigger value='editor'>Editor</TabsTrigger>
+        <TabsTrigger value='logs' >logs</TabsTrigger>
+      </TabsList>
+   
+   <div className='  flex flex-col '>
+   <TabsContent value='editor' className='flex flex-col   '>
+   
+
+   <div className='flex justify-end mr-7'>
+   <VscDebugStart className='  text-[#4d142b] z-10'
+   onClick={()=>executeQuery()}
+   size={29}/>
+   </div>
+   
+    <Editor
+    value={query}
+className='min-h-screen'
+defaultLanguage='sql'
+theme='custom-theme'
+beforeMount={monaco => {
+  monaco.editor.defineTheme('custom-theme', {
+    base: 'vs-dark', // Start with the 'vs-dark' base theme
+inherit: true,    // Inherit other settings from the base theme
+rules: [],        // Customize rules (if needed)
+colors: {
+  'editor.background': '#17010A', // Set background color to black
+},
+  });
+}}
+options={{
+  wordWrap:"on"
+  
+}}
+onMount={(editor,monaco:Monaco)=>{
+  handleEditorMount(monaco)
+  handleEditorChange(editor)
+}}
+/>
+  
+  
+   </TabsContent>
+
+   <TabsContent value='logs' className=''>
+       <p className='text-slate-50'>Logs</p>
+   </TabsContent>
+   </div>
      
-      <Editor
-      defaultLanguage='sql'
-      theme='custom-theme'
-      beforeMount={monaco => {
-        monaco.editor.defineTheme('custom-theme', {
-          base: 'vs-dark', // Start with the 'vs-dark' base theme
-      inherit: true,    // Inherit other settings from the base theme
-      rules: [],        // Customize rules (if needed)
-      colors: {
-        'editor.background': '#17010A', // Set background color to black
-      },
-        });
-      }}
-      options={{
-        wordWrap:"on"
-        
-      }}
-      onMount={(editor,monaco:Monaco)=>{
-        handleEditorMount(monaco)
-        handleEditorChange(editor)
-      }}
-      />
-      </div>
-      <div className='h-12 md:h-20 flex items-center justify-center bg-[#17010A] '>
-      
-      </div>
-      </div>
+     </Tabs>
     </div>
   )
 }
