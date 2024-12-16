@@ -65,9 +65,11 @@ const CodeEditor = () => {
   },[])
   return (
            <div className='flex flex-col '>
-             <VscDebugStart className='  text-[#4d142b] z-10'
+          <div className='flex justify-end mr-4 mb-1'>
+          <VscDebugStart className='  text-[#4d142b] z-10'
    onClick={()=>executeQuery()}
    size={29}/>
+          </div>
  <Editor
       value={query}
       className='min-h-screen'

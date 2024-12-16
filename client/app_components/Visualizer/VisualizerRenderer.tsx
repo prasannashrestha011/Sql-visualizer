@@ -35,8 +35,8 @@ const SqlVisualizer = () => {
     <CodeEditor/>
    </TabsContent>
 
-   <TabsContent value='logs' className='bg-black text-slate-400 font-mono'>
-    <div className='p-2 h-screen'>
+   <TabsContent value='logs' className='bg-black text-slate-400 font-mono '>
+    <div className='p-2 h-screen text-xs md:text-base'>
       <ul>
         {logs.map((log,idx)=>{
           return(
