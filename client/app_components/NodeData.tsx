@@ -29,6 +29,7 @@ const InitialNode:TableNode[]=[
          type:'dataSchema'
     }
 ]
+
 const InitialEdges:Edge[]=[
     {
         id:'e1-e2',
